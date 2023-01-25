@@ -8,10 +8,12 @@ token = ''
 bot = telebot.TeleBot(token)
 bot.delete_webhook()
 
+
 def handler(event, context):
     body = json.loads(event['body'])
     update = telebot.types.Update.de_json(body)
     bot.process_new_updates([update])
+
 
 @bot.message_handler(commands=['start'])
 def any_msg(message):
@@ -25,19 +27,19 @@ def any_msg(message):
     # которая кнопку обрабатывает
     sovet_button = types.InlineKeyboardButton(text="Совет дома", callback_data="sovet")
     instructions_button = types.InlineKeyboardButton(text="Инструкции", callback_data="instructions")
-    Main_locations_button = types.InlineKeyboardButton(text="Полезные адреса", callback_data="Main_locations")
-    Main_phone_button = types.InlineKeyboardButton(text="Важные номера телефонов", callback_data="Main_phone")
+    main_locations_button = types.InlineKeyboardButton(text="Полезные адреса", callback_data="Main_locations")
+    main_phone_button = types.InlineKeyboardButton(text="Важные номера телефонов", callback_data="Main_phone")
     around_button = types.InlineKeyboardButton(text="Что рядом?", callback_data="around")
     # links_button = types.InlineKeyboardButton(text="Полезные ссылки", callback_data="links")
-    Que_button = types.InlineKeyboardButton(text="Я Самый ЛУЧШИЙ из соседей", callback_data="Que")
+    que_button = types.InlineKeyboardButton(text="Я Самый ЛУЧШИЙ из соседей", callback_data="Que")
 
     # Тут добвляешь кнопки в клавиатуру. Опытным путем получено, что сколько добавить столько и будет в строке. Добавишь все он
     # он разместит их по своему сам
-    keyboardmain.add(sovet_button, Main_phone_button)
-    keyboardmain.add(Main_locations_button)
+    keyboardmain.add(sovet_button, main_phone_button)
+    keyboardmain.add(main_locations_button)
     keyboardmain.add(instructions_button)
     keyboardmain.add(around_button)  # , links_button)
-    keyboardmain.add(Que_button)
+    keyboardmain.add(que_button)
     # При первом вызове sent_message, а дальше уже edit_message. В кавычках текст шапки меню, а reply_markup - туда передаешь
     # свою клаву
     bot.send_message(message.chat.id, "МЕНЮ", reply_markup=keyboardmain)
