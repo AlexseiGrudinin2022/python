@@ -4,23 +4,17 @@ import json
 import telebot  # забить
 from telebot import types  # забить
 
-token = 'ТОКЕН БОТА'
+token = '5712181802:AAFB94I_Kgs9TmCMSWQmcpmHVU8jkc-uQR4'
 bot = telebot.TeleBot(token)
 
 
-def handler(event, context):
+def handler(event):
     body = json.loads(event['body'])
     update = telebot.types.Update.de_json(body)
     bot.process_new_updates([update])
 
 
-@bot.message_handler(commands=['start'])
-def any_msg(message):
-    # Здесь все, что отвечает за картинку. Ссылка - это ссылка на картинку, а caption текст, который с ней выходит
-    # Если не надо, то убираешь две следующие строки
-    photo_url = 'https://www.sunhome.ru/i/wallpapers/73/krasnoe-selo.orig.jpg'
-    bot.send_photo(message.chat.id, photo=photo_url, caption='ТУТ БУДЕТ карта-навигатор подразделов')
-    # Тут инициализация клавиатуры
+def go_back_to_the_menu():
     keyboardmain = types.InlineKeyboardMarkup(row_width=2)
     # Тут инициалаизаци кнопок text - это то, что на кнопке будет написано callback_data это что будет получать функция,
     # которая кнопку обрабатывает
@@ -31,8 +25,7 @@ def any_msg(message):
     around_button = types.InlineKeyboardButton(text="Что рядом?", callback_data="around")
     # links_button = types.InlineKeyboardButton(text="Полезные ссылки", callback_data="links")
     que_button = types.InlineKeyboardButton(text="Я Самый ЛУЧШИЙ из соседей", callback_data="Que")
-    under_the_egg = types.InlineKeyboardButton(text="Под ЯИЧКО!!", callback_data="egg")
-
+    under_the_egg_button = types.InlineKeyboardButton(text="Под ЯИЧКО!!", callback_data="egg")
     # Тут добвляешь кнопки в клавиатуру. Опытным путем получено, что сколько добавить столько и будет в строке. Добавишь все он
     # он разместит их по своему сам
     keyboardmain.add(sovet_button, main_phone_button)
@@ -40,10 +33,16 @@ def any_msg(message):
     keyboardmain.add(instructions_button)
     keyboardmain.add(around_button)  # , links_button)
     keyboardmain.add(que_button)
-    keyboardmain.add(under_the_egg)
-    # При первом вызове sent_message, а дальше уже edit_message. В кавычках текст шапки меню, а reply_markup - туда передаешь
-    # свою клаву
-    bot.send_message(message.chat.id, "МЕНЮ", reply_markup=keyboardmain)
+    keyboardmain.add(under_the_egg_button)
+    return keyboardmain
+
+
+@bot.message_handler(commands=['start'])
+def any_msg(message):
+    # реагирует на команду /start и показывает "карту-навигатор", а так же меню
+    photo_url = 'https://www.sunhome.ru/i/wallpapers/73/krasnoe-selo.orig.jpg'
+    bot.send_photo(message.chat.id, photo=photo_url, caption='ТУТ БУДЕТ карта-навигатор подразделов')
+    bot.send_message(message.chat.id, "МЕНЮ", reply_markup=go_back_to_the_menu())
 
 
 # Тут обработка вызова
@@ -51,23 +50,8 @@ def any_msg(message):
 def callback_inline(call):
     # Этот if для кнопки назад.
     if call.data == "mainmenu":
-        keyboardmain = types.InlineKeyboardMarkup(row_width=2)
-        sovet_button = types.InlineKeyboardButton(text="Совет дома", callback_data="sovet")
-        instructions_button = types.InlineKeyboardButton(text="Инструкции", callback_data="instructions")
-        Main_locations_button = types.InlineKeyboardButton(text="Полезные адреса", callback_data="Main_locations")
-        Main_phone_button = types.InlineKeyboardButton(text="Важные номера телефонов", callback_data="Main_phone")
-        around_button = types.InlineKeyboardButton(text="Что рядом?", callback_data="around")
-        # links_button = types.InlineKeyboardButton(text="Полезные ссылки", callback_data="links")
-        Que_button = types.InlineKeyboardButton(text="Я Самый ЛУЧШИЙ из соседей", callback_data="Que")
-        underTheEgg = types.InlineKeyboardButton(text="Под ЯИЧКО!!", callback_data="egg")
-        keyboardmain.add(sovet_button, Main_phone_button)
-        keyboardmain.add(Main_locations_button)
-        keyboardmain.add(instructions_button)
-        keyboardmain.add(around_button)  # , links_button)
-        keyboardmain.add(Que_button)
-        keyboardmain.add(underTheEgg)
         bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="МЕНЮ",
-                              reply_markup=keyboardmain)
+                              reply_markup=go_back_to_the_menu())
 
     if call.data == "sovet":
         keyboard = types.InlineKeyboardMarkup()
