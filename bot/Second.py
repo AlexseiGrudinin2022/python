@@ -4,14 +4,16 @@ import json
 import telebot  # забить
 from telebot import types  # забить
 
-token = '5712181802:AAFB94I_Kgs9TmCMSWQmcpmHVU8jkc-uQR4'
+token = ''
 bot = telebot.TeleBot(token)
+bot.delete_webhook()
 
 
 def handler(event):
     body = json.loads(event['body'])
     update = telebot.types.Update.de_json(body)
     bot.process_new_updates([update])
+    bot.stop_polling()
 
 
 def go_back_to_the_menu():
@@ -570,7 +572,9 @@ def callback_inline(call):
         #  bot.send_message(chat_id=call.message.chat.id, text="утомительная")
 
 
-bot.polling(none_stop=True)
+if str(bot.get_webhook_info().url).strip() == "":
+    bot.delete_webhook()
+    bot.polling()
 
 """
 В общем правила простые. Хочешь что то добавить во вторую или третью клаву, то копируешь из части, где обработчик
@@ -579,3 +583,4 @@ bot.polling(none_stop=True)
 Ну вот вроде бы и все"""
 
 #  Copyright (c) ChernV (@otter18), 2021.
+# 628955904
